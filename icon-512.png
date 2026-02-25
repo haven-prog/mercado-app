@@ -1,148 +1,16 @@
-# 🛒 Mercado — App de Lista de Compras
-
-App PWA (Progressive Web App) para Android. Funciona **100% offline**, sem banco de dados externo. Tudo fica salvo no próprio celular.
-
----
-
-## 📱 Como instalar no Android
-
-### Opção 1 — Hospedar no GitHub Pages (gratuito, recomendado)
-
-1. Crie uma conta em [github.com](https://github.com) se ainda não tiver
-2. Crie um repositório novo (ex: `mercado-app`)
-3. Suba os arquivos desta pasta para o repositório:
-   - `index.html`
-   - `manifest.json`
-   - `sw.js`
-   - `icon-192.png`
-   - `icon-512.png`
-4. Vá em **Settings → Pages → Source: main branch → Save**
-5. Aguarde ~1 minuto. O link será: `https://SEU-USUARIO.github.io/mercado-app`
-6. Abra esse link no Chrome do Android
-7. O Chrome vai mostrar um banner **"Adicionar à tela inicial"** — toque nele
-8. ✅ Pronto! O ícone aparece na tela inicial como um app normal
-
-### Opção 2 — Hospedar no Netlify (arrasta e solta, mais fácil)
-
-1. Acesse [app.netlify.com/drop](https://app.netlify.com/drop)
-2. **Arraste a pasta inteira** do projeto para a página
-3. Netlify gera um link na hora (ex: `https://xpto-123.netlify.app`)
-4. Abra o link no Chrome do Android → toque em "Adicionar à tela inicial"
-5. ✅ Pronto!
-
-### Opção 3 — Testar localmente no computador (sem hospedar)
-
-```bash
-# Instale o http-server se não tiver
-npm install -g http-server
-
-# Entre na pasta do projeto
-cd mercado-app
-
-# Rode o servidor
-http-server -p 8080
-
-# Abra no navegador
-http://localhost:8080
-```
-
-> ⚠️ Para instalar como PWA no celular, precisa estar hospedado em HTTPS (GitHub Pages e Netlify já fazem isso automaticamente).
-
----
-
-## 🗂 Estrutura de arquivos
-
-```
-mercado-app/
-├── index.html      ← O app inteiro (HTML + CSS + JS em um arquivo só)
-├── manifest.json   ← Configuração do PWA (nome, ícone, cor)
-├── sw.js           ← Service Worker (permite uso offline)
-├── icon-192.png    ← Ícone do app (192×192px)
-├── icon-512.png    ← Ícone do app (512×512px)
-└── README.md       ← Este arquivo
-```
-
----
-
-## 🛠 Como personalizar
-
-Abra o `index.html` em qualquer editor de texto (Notepad, VS Code, etc.).
-
-### Trocar o nome do app
-No `manifest.json`, mude:
-```json
-"name": "Mercado — Lista de Compras",
-"short_name": "Mercado",
-```
-
-### Trocar a cor do app
-No `manifest.json` e no `index.html` (variável `:root > --g1`):
-```css
---g1: #1B5E20;  /* verde escuro */
---g3: #43A047;  /* verde médio */
-```
-
-### Adicionar novos itens ao histórico de sugestões
-No `index.html`, procure por `HIST_SUGGESTIONS` e adicione itens:
-```js
-const HIST_SUGGESTIONS = ["arroz","feijão","leite", ... ,"seu item aqui"];
-```
-
-### Adicionar novas categorias
-Procure pelo objeto `CATS` e adicione sua categoria:
-```js
-"🧴 Higiene": ["shampoo","condicionador","sabonete","creme"],
-```
-
----
-
-## 📲 Funcionalidades
-
-| Feature | Descrição |
-|---|---|
-| 🛒 **Lista por categoria** | Itens agrupados por Hortifruti, Açougue, Laticínios, Limpeza, etc. |
-| 💰 **Calculadora de carrinho** | Digite o preço de cada item → subtotal e total atualizados na hora |
-| ⚠️ **Alerta de orçamento** | Barra fica amarela (>70%) ou vermelha (>90%) do limite definido |
-| ⭐ **Lista de desejos** | Guarda itens que não cabem no orçamento agora |
-| 🕐 **Histórico de compras** | Sugestões de itens comprados anteriormente com 1 toque |
-| 📈 **Histórico de preços** | Compara o preço atual com o da última compra |
-| 📊 **Relatório mensal** | Gráfico de gastos por mês e por categoria |
-| 📴 **Funciona offline** | Após a primeira abertura, funciona sem internet |
-| 💾 **Salvo no celular** | Nenhum cadastro ou conta necessária |
-
----
-
-## 🔄 Como funciona o salvamento
-
-Todos os dados ficam no **localStorage** do navegador Chrome no celular. Isso significa:
-
-- ✅ Funciona sem internet
-- ✅ Sem conta, sem cadastro, sem servidor
-- ✅ Os dados ficam salvos mesmo fechando o app
-- ⚠️ Se limpar os dados do Chrome, os dados do app são apagados
-- ⚠️ Não sincroniza entre dois celulares (para isso, seria necessário adicionar Firebase — ver seção abaixo)
-
----
-
-## 🔥 Quer adicionar sincronização entre dois celulares?
-
-Se quiser que você e sua esposa vejam a mesma lista em tempo real, será necessário adicionar o **Firebase Realtime Database**. Isso é uma segunda etapa e requer:
-
-1. Criar uma conta no [Firebase](https://firebase.google.com) (gratuito para uso pessoal)
-2. Criar um projeto e pegar as credenciais
-3. Substituir o `localStorage` pelas chamadas do Firebase no `index.html`
-
-É um upgrade de ~2-3 horas de trabalho a partir desta base. Me peça quando quiser evoluir para isso!
-
----
-
-## 💡 Dica de uso no mercado
-
-1. **Antes de ir ao mercado:** adicione todos os itens em casa, defina o orçamento
-2. **No mercado:** conforme for pegando os itens, toque no círculo para marcar como "no carrinho" e expanda para digitar o preço
-3. **Na hora de pagar:** o total já está calculado na tela, sem surpresa no caixa
-4. **Depois:** vá em Relatório para ver os gastos por categoria
-
----
-
-Feito com ❤️ para facilitar as compras do mês.
+{
+  "name": "Mercado — Lista de Compras",
+  "short_name": "Mercado",
+  "description": "App de lista de compras para o mês",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#F5F4F0",
+  "theme_color": "#E8380D",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "categories": ["shopping", "lifestyle", "utilities"],
+  "lang": "pt-BR"
+}
