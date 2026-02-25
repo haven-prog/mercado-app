@@ -295,11 +295,27 @@ html,body{height:100dvh;background:var(--bg);color:var(--text);overflow:hidden;f
 .cat-sel{width:100%;background:var(--bg);border:2px solid var(--border);border-radius:12px;padding:12px 14px;font-size:14px;font-family:'Poppins',sans-serif;font-weight:600;color:var(--text);outline:none;margin-bottom:16px;appearance:none;}
 
 /* ── SESSION CARDS IN REPORT ── */
-.session-card{background:var(--card);border-radius:14px;border:1.5px solid var(--border);padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
-.session-info .session-date{font-size:12px;color:var(--soft);font-weight:600;}
-.session-info .session-total{font-size:17px;font-weight:800;color:var(--text);margin-top:2px;}
-.session-info .session-items{font-size:11px;color:var(--soft);margin-top:2px;}
-.session-del{background:#FFF0ED;color:var(--red);border:none;border-radius:10px;padding:10px 12px;font-size:18px;cursor:pointer;flex-shrink:0;}
+.session-card{background:var(--card);border-radius:var(--rb);box-shadow:var(--shadow);border:1.5px solid var(--border);margin-bottom:12px;overflow:hidden;}
+.session-header{display:flex;align-items:center;justify-content:space-between;padding:16px 16px 14px;cursor:pointer;gap:12px;}
+.session-left{}
+.session-date-label{font-size:11px;font-weight:700;color:var(--soft);text-transform:uppercase;letter-spacing:.06em;}
+.session-date-val{font-size:15px;font-weight:800;color:var(--text);margin-top:2px;}
+.session-total-big{font-size:22px;font-weight:900;color:var(--red);}
+.session-meta{font-size:11px;color:var(--soft);margin-top:2px;}
+.session-chevron{font-size:18px;color:var(--soft);transition:transform .2s;flex-shrink:0;}
+.session-chevron.open{transform:rotate(180deg);}
+.session-body{display:none;border-top:1.5px solid var(--border);}
+.session-body.open{display:block;}
+.session-item-row{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--border);}
+.session-item-row:last-child{border-bottom:none;}
+.si-ico{font-size:20px;flex-shrink:0;}
+.si-name{flex:1;font-size:13px;font-weight:600;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.si-qty{font-size:12px;color:var(--soft);flex-shrink:0;}
+.si-price{font-size:13px;font-weight:700;color:var(--green);flex-shrink:0;font-variant-numeric:tabular-nums;}
+.si-no-price{font-size:12px;color:#ccc;flex-shrink:0;}
+.session-footer{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#FAFAFA;border-top:1.5px solid var(--border);}
+.session-del{background:#FFF0ED;color:var(--red);border:none;border-radius:10px;padding:9px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif;}
+.session-total-footer{font-size:15px;font-weight:800;color:var(--text);}
 </style>
 </head>
 <body>
@@ -413,26 +429,32 @@ html,body{height:100dvh;background:var(--bg);color:var(--text);overflow:hidden;f
     <!-- RELATORIO -->
     <div id="tab-relatorio" class="tab-content" style="display:none;">
       <div style="height:12px"></div>
-      <div class="report-card">
-        <div class="rc-title">📅 Histórico de gastos</div>
-        <div class="bar-chart" id="chart-months"></div>
-      </div>
-      <div class="report-card">
-        <div class="rc-title">📦 Por categoria (mês atual)</div>
-        <div id="chart-cats"></div>
-        <div class="report-total-row">
-          <span class="rt-label">Total registrado</span>
-          <span class="rt-val" id="report-total">R$ 0,00</span>
+      <div id="sessions-list" style="padding:0 16px"></div>
+      <div class="report-card" id="report-charts" style="margin-top:4px;">
+        <div class="rc-title" id="charts-toggle" style="cursor:pointer;display:flex;justify-content:space-between;align-items:center;">
+          📊 Gráficos e análises <span id="charts-chevron">▾</span>
+        </div>
+        <div id="charts-body">
+          <div style="margin-bottom:18px;">
+            <div style="font-size:11px;font-weight:700;color:var(--soft);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Histórico de gastos</div>
+            <div class="bar-chart" id="chart-months"></div>
+          </div>
+          <div style="margin-bottom:18px;">
+            <div style="font-size:11px;font-weight:700;color:var(--soft);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Por categoria</div>
+            <div id="chart-cats"></div>
+            <div class="report-total-row">
+              <span class="rt-label">Total em aberto</span>
+              <span class="rt-val" id="report-total">R$ 0,00</span>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:700;color:var(--soft);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Histórico de preços</div>
+            <div id="price-hist"></div>
+          </div>
         </div>
       </div>
-      <div class="report-card">
-        <div class="rc-title">📈 Histórico de preços</div>
-        <div id="price-hist"></div>
-      </div>
-      <div class="report-card">
-        <div class="rc-title">🧾 Compras realizadas</div>
-        <div id="sessions-list"></div>
-      </div>
+      <div style="height:16px"></div>
+    </div>
     </div>
 
   </div><!-- /scroll -->
@@ -946,38 +968,94 @@ function renderDesejos(){
 //  RENDER REPORT
 // ══════════════════════════════════
 function renderReport(){
+  renderSessions();
   renderMonthsChart();
   renderCatsChart();
   renderPriceHist();
-  renderSessions();
   document.getElementById('report-total').textContent=fmtBRL(getTotal());
 }
 
+let chartsOpen=true;
+
 function renderSessions(){
   const sl=document.getElementById('sessions-list');
-  const sessions=[...st.completedSessions].reverse();
-  if(!sessions.length){
-    sl.innerHTML='<div style="color:var(--soft);font-size:13px;padding:8px 0">As compras finalizadas vão aparecer aqui.</div>';
+
+  // Charts toggle
+  const toggle=document.getElementById('charts-toggle');
+  const chartsBody=document.getElementById('charts-body');
+  const chevron=document.getElementById('charts-chevron');
+  chartsBody.style.display=chartsOpen?'block':'none';
+  chevron.textContent=chartsOpen?'▴':'▾';
+  toggle.onclick=()=>{chartsOpen=!chartsOpen;chartsBody.style.display=chartsOpen?'block':'none';chevron.textContent=chartsOpen?'▴':'▾';};
+
+  if(!st.completedSessions.length){
+    sl.innerHTML=`<div class="empty" style="padding:40px 0 20px"><div class="empty-ico">🧾</div><h3>Nenhuma compra ainda</h3><p>Finalize uma compra na Lista para ela aparecer aqui.</p></div>`;
     return;
   }
+
+  const sessions=[...st.completedSessions].reverse();
   sl.innerHTML=sessions.map((s,i)=>{
     const realIdx=st.completedSessions.length-1-i;
     const d=new Date(s.date);
-    const dateStr=d.toLocaleDateString('pt-BR',{weekday:'short',day:'numeric',month:'short',year:'2-digit'});
-    return`<div class="session-card">
-      <div class="session-info">
-        <div class="session-date">📅 ${dateStr}</div>
-        <div class="session-total">${fmtBRL(s.total)}</div>
-        <div class="session-items">${s.itemCount} itens</div>
+    const today=new Date();
+    const yesterday=new Date(today);yesterday.setDate(today.getDate()-1);
+    let dayLabel;
+    if(d.toDateString()===today.toDateString()) dayLabel='Hoje';
+    else if(d.toDateString()===yesterday.toDateString()) dayLabel='Ontem';
+    else dayLabel=d.toLocaleDateString('pt-BR',{weekday:'long'}).replace(/^\w/,c=>c.toUpperCase());
+    const dateStr=d.toLocaleDateString('pt-BR',{day:'numeric',month:'long',year:'numeric'});
+    const timeStr=d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+    const items=s.items||[];
+    const itemsHTML=items.map(it=>{
+      const sub=(parseFloat(it.price)||0)*(parseInt(it.qty)||1);
+      return`<div class="session-item-row">
+        <div class="si-ico">${it.ico||'🛍'}</div>
+        <div class="si-name">${it.name}</div>
+        <div class="si-qty">×${it.qty||1}</div>
+        ${sub>0?`<div class="si-price">${fmtBRL(sub)}</div>`:`<div class="si-no-price">—</div>`}
+      </div>`;
+    }).join('');
+
+    return`<div class="session-card" id="sc-${realIdx}">
+      <div class="session-header" data-sidx="${realIdx}">
+        <div class="session-left">
+          <div class="session-date-label">${dayLabel} · ${timeStr}</div>
+          <div class="session-date-val">${dateStr}</div>
+          <div class="session-meta">${s.itemCount} ${s.itemCount===1?'item':'itens'}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="session-total-big">${fmtBRL(s.total)}</div>
+          <div class="session-chevron" id="chev-${realIdx}">▾</div>
+        </div>
       </div>
-      <button class="session-del" data-act="del-session" data-sidx="${realIdx}">🗑</button>
+      <div class="session-body" id="sbody-${realIdx}">
+        ${itemsHTML}
+        <div class="session-footer">
+          <button class="session-del" data-act="del-session" data-sidx="${realIdx}">🗑 Excluir compra</button>
+          <div class="session-total-footer">Total: ${fmtBRL(s.total)}</div>
+        </div>
+      </div>
     </div>`;
   }).join('');
+
+  // Toggle expand
+  sl.querySelectorAll('.session-header').forEach(hdr=>{
+    hdr.addEventListener('click',()=>{
+      const idx=hdr.dataset.sidx;
+      const body=document.getElementById('sbody-'+idx);
+      const chev=document.getElementById('chev-'+idx);
+      const isOpen=body.classList.contains('open');
+      body.classList.toggle('open',!isOpen);
+      chev.classList.toggle('open',!isOpen);
+    });
+  });
+
+  // Delete
   sl.querySelectorAll('[data-act="del-session"]').forEach(btn=>{
-    btn.addEventListener('click',()=>{
+    btn.addEventListener('click',e=>{
+      e.stopPropagation();
       const idx=parseInt(btn.dataset.sidx);
       const s=st.completedSessions[idx];
-      // Remove monthly total contribution if this was the only session that month
       if(s){
         const mk=s.date.slice(0,7);
         const remaining=st.completedSessions.filter((_,i)=>i!==idx&&_.date.slice(0,7)===mk);
@@ -1073,7 +1151,7 @@ function doFinish(){
     date:new Date().toISOString(),
     total,
     itemCount:st.items.length,
-    items:st.items.map(i=>({name:i.name,price:i.price,qty:i.qty,category:i.category}))
+    items:st.items.map(i=>({name:i.name,price:i.price,qty:i.qty,category:i.category,ico:i.ico||getIco(i.name)}))
   });
   // Reset list
   st.items=[];
@@ -1090,7 +1168,18 @@ function doFinish(){
 function doAdd(name,qty,toWishlist,ico,cat){
   if(!name.trim())return;
   const id=st.nextId++;
-  const item={id,name:name.trim(),qty:qty||1,price:'',category:cat||getCat(name),ico:ico||getIco(name),checked:false};
+  // Pre-fill last known price for this item
+  const ph=st.priceHistory[name.toLowerCase()];
+  const lastPrice=ph&&ph.length>0?ph[ph.length-1].price:'';
+  const item={
+    id,
+    name:name.trim(),
+    qty:qty||1,
+    price:lastPrice?String(lastPrice):'',
+    category:cat||getCat(name),
+    ico:ico||getIco(name),
+    checked:false
+  };
   if(toWishlist)st.wishlist.push(item);
   else st.items.push(item);
   saveState();
