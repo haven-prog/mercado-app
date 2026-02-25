@@ -261,11 +261,84 @@ html,body{height:100dvh;background:var(--bg);color:var(--text);overflow:hidden;f
 
 @keyframes slideUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
 .item-card{animation:slideUp .2s ease forwards;}
+
+/* ── QTY PICKER MODAL ── */
+.qpick-sheet{background:#fff;border-radius:28px 28px 0 0;padding:24px 20px calc(28px + env(safe-area-inset-bottom,0px));width:100%;max-width:500px;}
+.qpick-prod{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+.qpick-ico{font-size:40px;}
+.qpick-name{font-size:18px;font-weight:800;}
+.qpick-cat{font-size:12px;color:var(--soft);margin-top:2px;}
+.qpick-ctrl{display:flex;align-items:center;justify-content:center;gap:20px;margin-bottom:24px;}
+.qpick-btn{background:var(--bg);border:2px solid var(--border);border-radius:50%;width:52px;height:52px;font-size:28px;font-weight:900;color:var(--red);cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.qpick-btn:active{background:#FFF0ED;}
+.qpick-val{font-size:36px;font-weight:900;min-width:60px;text-align:center;}
+.qpick-confirm{width:100%;background:var(--red);color:#fff;border:none;border-radius:16px;padding:16px;font-size:16px;font-weight:800;cursor:pointer;font-family:'Poppins',sans-serif;}
+.qpick-confirm:active{background:#C0200A;}
+
+/* ── CUSTOM CATALOG ITEM ADD ── */
+.cat-add-card{
+  background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);
+  border:2px dashed var(--border);padding:14px 12px;
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  cursor:pointer;transition:all .15s;
+}
+.cat-add-card:active{border-color:var(--red);background:#FFF0ED;}
+.cat-add-ico{font-size:28px;color:var(--soft);}
+.cat-add-label{font-size:12px;font-weight:700;color:var(--soft);text-align:center;}
+
+/* ── ADD CATALOG MODAL ── */
+.cat-modal-field{width:100%;background:var(--bg);border:2px solid var(--border);border-radius:12px;padding:12px 14px;font-size:15px;font-family:'Poppins',sans-serif;font-weight:500;color:var(--text);outline:none;margin-bottom:10px;}
+.cat-modal-field:focus{border-color:var(--red);}
+.ico-picker{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
+.ico-opt{font-size:24px;padding:6px;cursor:pointer;border-radius:10px;border:2px solid transparent;transition:all .15s;}
+.ico-opt.sel{border-color:var(--red);background:#FFF0ED;}
+.cat-sel{width:100%;background:var(--bg);border:2px solid var(--border);border-radius:12px;padding:12px 14px;font-size:14px;font-family:'Poppins',sans-serif;font-weight:600;color:var(--text);outline:none;margin-bottom:16px;appearance:none;}
+
+/* ── SESSION CARDS IN REPORT ── */
+.session-card{background:var(--card);border-radius:14px;border:1.5px solid var(--border);padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.session-info .session-date{font-size:12px;color:var(--soft);font-weight:600;}
+.session-info .session-total{font-size:17px;font-weight:800;color:var(--text);margin-top:2px;}
+.session-info .session-items{font-size:11px;color:var(--soft);margin-top:2px;}
+.session-del{background:#FFF0ED;color:var(--red);border:none;border-radius:10px;padding:10px 12px;font-size:18px;cursor:pointer;flex-shrink:0;}
 </style>
 </head>
 <body>
 
 <div id="toast"></div>
+
+<!-- QTY PICKER MODAL -->
+<div class="modal-bg" id="modal-qty">
+  <div class="qpick-sheet">
+    <div class="modal-handle"></div>
+    <div class="qpick-prod">
+      <div class="qpick-ico" id="qpick-ico">🛍</div>
+      <div><div class="qpick-name" id="qpick-name">Item</div><div class="qpick-cat" id="qpick-cat"></div></div>
+    </div>
+    <div class="qpick-ctrl">
+      <button class="qpick-btn" id="qpick-minus">−</button>
+      <span class="qpick-val" id="qpick-val">1</span>
+      <button class="qpick-btn" id="qpick-plus">+</button>
+    </div>
+    <button class="qpick-confirm" id="qpick-confirm">Adicionar à Lista</button>
+  </div>
+</div>
+
+<!-- ADD TO CATALOG MODAL -->
+<div class="modal-bg" id="modal-cat-add">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">➕ Novo produto</div>
+    <input class="cat-modal-field" id="cat-new-name" type="text" placeholder="Nome do produto..." autocorrect="off"/>
+    <div style="font-size:11px;font-weight:700;color:var(--soft);margin-bottom:8px;">ÍCONE</div>
+    <div class="ico-picker" id="ico-picker"></div>
+    <div style="font-size:11px;font-weight:700;color:var(--soft);margin-bottom:8px;">CATEGORIA</div>
+    <select class="cat-sel" id="cat-new-cat"></select>
+    <div class="modal-btns">
+      <button class="modal-confirm" id="cat-new-confirm">Salvar produto</button>
+      <button class="modal-cancel" id="cat-new-cancel">Cancelar</button>
+    </div>
+  </div>
+</div>
 
 <!-- FINISH MODAL -->
 <div class="modal-bg" id="modal-finish">
@@ -355,6 +428,10 @@ html,body{height:100dvh;background:var(--bg);color:var(--text);overflow:hidden;f
       <div class="report-card">
         <div class="rc-title">📈 Histórico de preços</div>
         <div id="price-hist"></div>
+      </div>
+      <div class="report-card">
+        <div class="rc-title">🧾 Compras realizadas</div>
+        <div id="sessions-list"></div>
       </div>
     </div>
 
@@ -514,7 +591,7 @@ function getCat(name){
 // ══════════════════════════════════
 //  STATE
 // ══════════════════════════════════
-function defaultState(){return{items:[],wishlist:[],budget:0,priceHistory:{},monthlyTotals:{},completedSessions:[],nextId:1};}
+function defaultState(){return{items:[],wishlist:[],budget:0,priceHistory:{},monthlyTotals:{},completedSessions:[],customCatalog:[],nextId:1};}
 function loadState(){try{const s=JSON.parse(localStorage.getItem('mercadov2'));return s?{...defaultState(),...s}:defaultState();}catch{return defaultState();}}
 function saveState(){localStorage.setItem('mercadov2',JSON.stringify(st));}
 
@@ -523,8 +600,25 @@ let activeTab='lista';
 let addQty=1;
 let histOpen=false;
 let activeCatFilter='Todos';
-// Track which item is currently being edited (to avoid re-render while typing)
 let editingItemId=null;
+let qtyPickPending=null; // {name, ico, cat}
+
+// Build dynamic history from sessions + defaults
+function getHistoryItems(){
+  const seen=new Set();
+  const result=[];
+  // From completed sessions (most recent first)
+  const allSessionItems=[...st.completedSessions].reverse().flatMap(s=>s.items||[]);
+  allSessionItems.forEach(i=>{
+    const k=i.name.toLowerCase();
+    if(!seen.has(k)){seen.add(k);result.push(i.name);}
+  });
+  // Fill with defaults not already in list
+  HIST_DEFAULT.forEach(h=>{
+    if(!seen.has(h.toLowerCase())){seen.add(h.toLowerCase());result.push(h);}
+  });
+  return result;
+}
 
 // ══════════════════════════════════
 //  UTILS
@@ -751,12 +845,7 @@ function onAct(e){
     st.wishlist=st.wishlist.filter(i=>i.id!==id);saveState();render();toast('Removido');
   }
   if(act==='cat-add'){
-    const prodId=e.currentTarget.dataset.pid;
-    const prod=CATALOG.find(p=>p.id===prodId);
-    if(!prod)return;
-    if(st.items.find(i=>i.name.toLowerCase()===prod.name.toLowerCase())){toast('Já está na lista!');return;}
-    doAdd(prod.name,1,false,prod.ico,prod.cat);
-    render();toast(`${prod.ico} ${prod.name} adicionado`);
+    // handled directly in renderCatalog
   }
 }
 
@@ -765,18 +854,20 @@ function onAct(e){
 // ══════════════════════════════════
 function renderHistPanel(){
   const panel=document.getElementById('hist-panel');
-  panel.style.display=histOpen?'flex':'none';
+  panel.style.display=histOpen?'block':'none';
   if(!histOpen)return;
-  panel.style.display='block';
   const existing=new Set(st.items.map(i=>i.name.toLowerCase()));
-  document.getElementById('hist-chips').innerHTML=HIST_DEFAULT.map(h=>
+  const histItems=getHistoryItems();
+  document.getElementById('hist-chips').innerHTML=histItems.map(h=>
     `<span class="hist-chip" data-hist="${h}">${existing.has(h.toLowerCase())?'✓ ':'+ '}${h}</span>`
   ).join('');
   document.querySelectorAll('.hist-chip').forEach(chip=>{
     chip.addEventListener('click',()=>{
       const nm=chip.dataset.hist;
       if(st.items.find(i=>i.name.toLowerCase()===nm.toLowerCase())){toast('Já está na lista!');return;}
-      doAdd(nm,1,false);histOpen=false;render();toast('+ '+nm);
+      // Open qty picker
+      openQtyPicker(nm, getIco(nm), getCat(nm));
+      histOpen=false;
     });
   });
 }
@@ -785,25 +876,45 @@ function renderHistPanel(){
 //  RENDER CATALOG
 // ══════════════════════════════════
 function renderCatalog(){
+  // Merge built-in + custom catalog
+  const fullCatalog=[...CATALOG, ...st.customCatalog];
+  const dynamicCats=['Todos',...new Set(fullCatalog.map(p=>p.cat))];
+
   // Filter chips
   const cf=document.getElementById('cat-filter');
-  cf.innerHTML=CATS_UNIQUE.map(c=>
+  cf.innerHTML=dynamicCats.map(c=>
     `<button class="cat-chip ${activeCatFilter===c?'active':''}" data-catf="${c}">${c}</button>`
   ).join('');
   cf.querySelectorAll('[data-catf]').forEach(btn=>{
     btn.addEventListener('click',()=>{activeCatFilter=btn.dataset.catf;renderCatalog();});
   });
+
   // Grid
   const inList=new Set(st.items.map(i=>i.name.toLowerCase()));
-  const filtered=activeCatFilter==='Todos'?CATALOG:CATALOG.filter(p=>p.cat===activeCatFilter);
-  document.getElementById('catalog-grid').innerHTML=filtered.map(p=>`
+  const filtered=activeCatFilter==='Todos'?fullCatalog:fullCatalog.filter(p=>p.cat===activeCatFilter);
+
+  let html=filtered.map(p=>`
     <div class="prod-card ${inList.has(p.name.toLowerCase())?'in-list':''}">
       <div class="prod-ico">${p.ico}</div>
       <div class="prod-name">${p.name}</div>
       <div class="prod-cat">${p.cat.split(' ').slice(1).join(' ')}</div>
-      <button class="prod-add-btn" data-act="cat-add" data-pid="${p.id}">${inList.has(p.name.toLowerCase())?'✓':'+'}</button>
+      <button class="prod-add-btn" data-act="cat-add" data-pid="${p.id}" data-name="${p.name}" data-ico="${p.ico}" data-pcat="${p.cat}">${inList.has(p.name.toLowerCase())?'✓':'+'}</button>
     </div>`).join('');
-  document.querySelectorAll('[data-act="cat-add"]').forEach(el=>el.addEventListener('click',onAct));
+
+  // Add-new card at the end
+  html+=`<div class="cat-add-card" id="btn-cat-new">
+    <div class="cat-add-ico">➕</div>
+    <div class="cat-add-label">Adicionar produto</div>
+  </div>`;
+
+  document.getElementById('catalog-grid').innerHTML=html;
+  document.querySelectorAll('[data-act="cat-add"]').forEach(el=>el.addEventListener('click',e=>{
+    const btn=e.currentTarget;
+    const name=btn.dataset.name;
+    if(st.items.find(i=>i.name.toLowerCase()===name.toLowerCase())){toast('Já está na lista!');return;}
+    openQtyPicker(name, btn.dataset.ico, btn.dataset.pcat);
+  }));
+  document.getElementById('btn-cat-new').addEventListener('click',openAddCatalogModal);
 }
 
 // ══════════════════════════════════
@@ -838,7 +949,45 @@ function renderReport(){
   renderMonthsChart();
   renderCatsChart();
   renderPriceHist();
+  renderSessions();
   document.getElementById('report-total').textContent=fmtBRL(getTotal());
+}
+
+function renderSessions(){
+  const sl=document.getElementById('sessions-list');
+  const sessions=[...st.completedSessions].reverse();
+  if(!sessions.length){
+    sl.innerHTML='<div style="color:var(--soft);font-size:13px;padding:8px 0">As compras finalizadas vão aparecer aqui.</div>';
+    return;
+  }
+  sl.innerHTML=sessions.map((s,i)=>{
+    const realIdx=st.completedSessions.length-1-i;
+    const d=new Date(s.date);
+    const dateStr=d.toLocaleDateString('pt-BR',{weekday:'short',day:'numeric',month:'short',year:'2-digit'});
+    return`<div class="session-card">
+      <div class="session-info">
+        <div class="session-date">📅 ${dateStr}</div>
+        <div class="session-total">${fmtBRL(s.total)}</div>
+        <div class="session-items">${s.itemCount} itens</div>
+      </div>
+      <button class="session-del" data-act="del-session" data-sidx="${realIdx}">🗑</button>
+    </div>`;
+  }).join('');
+  sl.querySelectorAll('[data-act="del-session"]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const idx=parseInt(btn.dataset.sidx);
+      const s=st.completedSessions[idx];
+      // Remove monthly total contribution if this was the only session that month
+      if(s){
+        const mk=s.date.slice(0,7);
+        const remaining=st.completedSessions.filter((_,i)=>i!==idx&&_.date.slice(0,7)===mk);
+        if(!remaining.length) delete st.monthlyTotals[mk];
+        else st.monthlyTotals[mk]=remaining.reduce((sum,r)=>sum+r.total,0);
+      }
+      st.completedSessions.splice(idx,1);
+      saveState();renderReport();toast('Compra removida');
+    });
+  });
 }
 
 function renderMonthsChart(){
@@ -969,6 +1118,50 @@ function setTab(tab){
 }
 
 // ══════════════════════════════════
+//  QTY PICKER MODAL
+// ══════════════════════════════════
+let qtyPickQty=1;
+
+function openQtyPicker(name, ico, cat){
+  qtyPickPending={name,ico,cat};
+  qtyPickQty=1;
+  document.getElementById('qpick-ico').textContent=ico||'🛍';
+  document.getElementById('qpick-name').textContent=name;
+  document.getElementById('qpick-cat').textContent=cat||'';
+  document.getElementById('qpick-val').textContent='1';
+  document.getElementById('modal-qty').classList.add('open');
+}
+function closeQtyPicker(){document.getElementById('modal-qty').classList.remove('open');qtyPickPending=null;}
+
+// ══════════════════════════════════
+//  ADD TO CATALOG MODAL
+// ══════════════════════════════════
+const ICO_OPTIONS=['🍎','🥦','🥕','🍅','🧅','🍋','🥩','🍗','🌭','🥛','🧀','🥚','🍞','🥖','🛒','🧴','🧺','🫙','☕','🍝','🍚','🫘','🌾','🧂','🧃','🍬','🥤','🍫','🧹','🪣','🧻','🛍','🏷','🍖','🐟','🥤','🍦','🫐','🍇','🍓'];
+const CAT_OPTIONS=['🥦 Hortifruti','🥩 Açougue','🥛 Laticínios','🍞 Padaria','🧹 Limpeza','❄️ Congelados','🛒 Mercearia'];
+let selectedIco='🛍';
+
+function openAddCatalogModal(){
+  selectedIco='🛍';
+  document.getElementById('cat-new-name').value='';
+  // Render ico picker
+  document.getElementById('ico-picker').innerHTML=ICO_OPTIONS.map(ic=>
+    `<span class="ico-opt ${ic===selectedIco?'sel':''}" data-ico="${ic}">${ic}</span>`
+  ).join('');
+  document.querySelectorAll('.ico-opt').forEach(el=>{
+    el.addEventListener('click',()=>{
+      selectedIco=el.dataset.ico;
+      document.querySelectorAll('.ico-opt').forEach(o=>o.classList.remove('sel'));
+      el.classList.add('sel');
+    });
+  });
+  // Render cat select
+  document.getElementById('cat-new-cat').innerHTML=CAT_OPTIONS.map(c=>`<option value="${c}">${c}</option>`).join('');
+  document.getElementById('modal-cat-add').classList.add('open');
+  setTimeout(()=>document.getElementById('cat-new-name').focus(),200);
+}
+function closeAddCatalogModal(){document.getElementById('modal-cat-add').classList.remove('open');}
+
+// ══════════════════════════════════
 //  EVENTS
 // ══════════════════════════════════
 document.getElementById('btn-add').addEventListener('click',()=>{
@@ -1018,6 +1211,38 @@ document.getElementById('modal-cancel-btn').addEventListener('click',closeFinish
 document.getElementById('modal-finish').addEventListener('click',e=>{
   if(e.target===e.currentTarget) closeFinishModal();
 });
+
+// Qty picker events
+document.getElementById('qpick-minus').addEventListener('click',()=>{
+  if(qtyPickQty>1){qtyPickQty--;document.getElementById('qpick-val').textContent=qtyPickQty;}
+});
+document.getElementById('qpick-plus').addEventListener('click',()=>{
+  qtyPickQty++;document.getElementById('qpick-val').textContent=qtyPickQty;
+});
+document.getElementById('qpick-confirm').addEventListener('click',()=>{
+  if(!qtyPickPending)return;
+  doAdd(qtyPickPending.name,qtyPickQty,false,qtyPickPending.ico,qtyPickPending.cat);
+  toast(`${qtyPickPending.ico} ×${qtyPickQty} ${qtyPickPending.name} adicionado`);
+  closeQtyPicker();
+  setTab('lista');render();
+});
+document.getElementById('modal-qty').addEventListener('click',e=>{if(e.target===e.currentTarget)closeQtyPicker();});
+
+// Add catalog modal events
+document.getElementById('cat-new-confirm').addEventListener('click',()=>{
+  const name=document.getElementById('cat-new-name').value.trim();
+  if(!name){toast('Digite o nome do produto');return;}
+  const cat=document.getElementById('cat-new-cat').value;
+  const newProd={id:'c'+Date.now(),name,cat,ico:selectedIco};
+  if(!st.customCatalog)st.customCatalog=[];
+  st.customCatalog.push(newProd);
+  saveState();
+  closeAddCatalogModal();
+  renderCatalog();
+  toast(`${selectedIco} ${name} adicionado ao catálogo`);
+});
+document.getElementById('cat-new-cancel').addEventListener('click',closeAddCatalogModal);
+document.getElementById('modal-cat-add').addEventListener('click',e=>{if(e.target===e.currentTarget)closeAddCatalogModal();});
 
 // ══════════════════════════════════
 //  INIT
