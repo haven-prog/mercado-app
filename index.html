@@ -615,21 +615,56 @@ function doAddItem(name, qty, toWishlist) {
 }
 
 // ═══════════ RENDER ALL ═══════════
+// ═══════════ RENDER ALL ═══════════
 function render() {
   renderHeader();
   renderStats();
-  if (activeTab==='lista') renderLista();
-  else if (activeTab==='desejos') renderDesejos();
+  if (activeTab === 'lista') renderLista();
+  else if (activeTab === 'desejos') renderDesejos();
   else renderRelatorio();
 }
 
-function setTab(tab) {
-  activeTab = tab;
-  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
-  document.getElementById('tab-lista').style.display = tab==='lista'?'block':'none';
-  document.getElementById('tab-desejos').style.display = tab==='desejos'?'block':'none';
-  document.getElementById('tab-relatorio').style.display = tab==='relatorio'?'block':'none';
-}
+// ═══════════ EVENTOS GLOBAIS ═══════════
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    activeTab = t.dataset.tab;
+    document.querySelectorAll('.tab').forEach(bt => bt.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('tab-lista').style.display = activeTab === 'lista' ? 'block' : 'none';
+    document.getElementById('tab-desejos').style.display = activeTab === 'desejos' ? 'block' : 'none';
+    document.getElementById('tab-relatorio').style.display = activeTab === 'relatorio' ? 'block' : 'none';
+    render();
+  });
+});
+
+document.getElementById('btn-add').addEventListener('click', () => {
+  const input = document.getElementById('add-input');
+  if (!input.value.trim()) return;
+  doAddItem(input.value, addQty, false);
+  input.value = ''; addQty = 1; document.getElementById('qty-val').textContent = '1';
+  render();
+  toast('Adicionado à lista!');
+});
+
+document.getElementById('btn-add-wish').addEventListener('click', () => {
+  const input = document.getElementById('add-input');
+  if (!input.value.trim()) return;
+  doAddItem(input.value, addQty, true);
+  input.value = ''; addQty = 1; document.getElementById('qty-val').textContent = '1';
+  render();
+  toast('Salvo nos desejos! ⭐');
+});
+
+document.getElementById('qty-plus').addEventListener('click', () => { addQty++; document.getElementById('qty-val').textContent = addQty; });
+document.getElementById('qty-minus').addEventListener('click', () => { if(addQty > 1) { addQty--; document.getElementById('qty-val').textContent = addQty; } });
+document.getElementById('btn-hist-toggle').addEventListener('click', () => { histOpen = !histOpen; render(); });
+document.getElementById('budget-input').addEventListener('input', (e) => { state.budget = parseFloat(e.target.value) || 0; saveState(); renderHeader(); });
+
+// Inicialização
+render();
+</script>
+</body>
+</html>
 
 // ═══════════ EVENTS ═══════════
 document.getElementById('btn-add').addEventListener('click', () => {
