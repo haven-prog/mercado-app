@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="theme-color" content="#1B5E20"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <title>Mercado</title>
+  <link rel="manifest" href="manifest.json"/>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Space+Mono:wght@700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --g1:#1B5E20;--g2:#2E7D32;--g3:#43A047;--gl:#C8E6C9;
+      --bg:#F1F8F1;--card:#fff;--text:#1a2e1a;--soft:#6a8f6a;
+      --border:#ddeedd;--red:#c62828;--yellow:#e65100;
+      --shadow:0 2px 12px rgba(27,94,32,.10);--r:16px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+    html,body{height:100dvh;background:var(--bg);font-family:'Nunito',sans-serif;color:var(--text);overflow:hidden;}
+    .screen{display:none;height:100dvh;flex-direction:column;overflow:hidden;}
+    .screen.active{display:flex;}
+
+    /* HEADER */
+    .header{background:linear-gradient(135deg,var(--g1),var(--g3));color:#fff;padding:16px 20px 20px;flex-shrink:0;border-radius:0 0 28px 28px;box-shadow:0 4px 20px rgba(27,94,32,.3);}
+    .header-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+    .hd-title{font-size:22px;font-weight:900;letter-spacing:-.5px;}
+    .hd-sub{font-size:12px;opacity:.8;font-weight:600;margin-top:1px;}
+    .btn-icon{background:rgba(255,255,255,.2);border:none;color:#fff;width:38px;height:38px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+    .budget-box{background:rgba(255,255,255,.15);border-radius:12px;padding:12px 14px;}
+    .budget-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+    .budget-label{font-size:12px;opacity:.85;font-weight:700;}
+    .budget-value{font-family:'Space Mono',monospace;font-size:16px;font-weight:700;}
+    .budget-track{background:rgba(0,0,0,.2);border-radius:999px;height:8px;overflow:hidden;}
+    .budget-fill{height:100%;border-radius:999px;transition:width .5s ease,background .3s;background:#A5D6A7;}
+    .budget-warn{font-size:11px;margin-top:5px;text-align:right;font-weight:700;opacity:.9;min-height:16px;}
+
+    /* STATS */
+    .stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:14px 16px 0;}
+    .stat-card{background:var(--card);border-radius:14px;padding:12px 10px;text-align:center;box-shadow:var(--shadow);border:1px solid var(--border);}
+    .stat-icon{font-size:20px;}
+    .stat-num{font-family:'Space Mono',monospace;font-size:20px;font-weight:700;color:var(--g1);line-height:1;margin:2px 0;}
+    .stat-label{font-size:10px;color:var(--soft);font-weight:700;text-transform:uppercase;letter-spacing:.05em;}
+
+    /* TABS */
+    .tabs{display:flex;gap:6px;padding:12px 16px 0;}
+    .tab{flex:1;padding:9px 4px;border-radius:12px;border:2px solid var(--border);background:var(--card);color:var(--soft);font-size:12px;font-weight:800;cursor:pointer;text-align:center;transition:all .2s;font-family:'Nunito',sans-serif;}
+    .tab.active{background:var(--g1);border-color:var(--g1);color:#fff;}
+
+    /* SCROLL */
+    .scroll{flex:1;overflow-y:auto;padding:12px 16px 80px;}
+    .scroll::-webkit-scrollbar{display:none;}
+
+    /* ADD BAR */
+    .add-bar{padding:10px 16px 16px;background:var(--bg);border-top:1px solid var(--border);flex-shrink:0;}
+    .add-row{display:flex;gap:8px;}
+    .add-input{flex:1;background:var(--card);border:2px solid var(--border);border-radius:14px;padding:13px 16px;font-size:15px;font-family:'Nunito',sans-serif;color:var(--text);font-weight:600;}
+    .add-input:focus{outline:none;border-color:var(--g3);}
+    .btn-add{background:var(--g1);color:#fff;border:none;border-radius:14px;width:50px;font-size:26px;cursor:pointer;font-weight:900;flex-shrink:0;}
+    .btn-wish{background:#FFF9C4;color:var(--yellow);border:2px solid #FFE082;border-radius:14px;width:50px;font-size:20px;cursor:pointer;flex-shrink:0;}
+    .qty-row{display:flex;gap:8px;margin-top:8px;align-items:center;}
+    .qty-box{display:flex;align-items:center;gap:8px;background:var(--card);border:2px solid var(--border);border-radius:12px;padding:6px 12px;}
+    .qty-btn{background:none;border:none;font-size:22px;color:var(--g2);cursor:pointer;width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-weight:900;}
+    .qty-num{font-family:'Space Mono',monospace;font-size:16px;font-weight:700;min-width:22px;text-align:center;}
+    .budget-set{flex:1;display:flex;align-items:center;gap:6px;background:var(--card);border:2px solid var(--border);border-radius:12px;padding:6px 12px;}
+    .budget-set label{font-size:11px;color:var(--soft);font-weight:800;white-space:nowrap;}
+    .budget-set input{background:none;border:none;font-size:14px;font-family:'Space Mono',monospace;font-weight:700;color:var(--g1);width:70px;outline:none;}
+
+    /* ITEMS */
+    .cat-label{font-size:11px;font-weight:900;color:var(--soft);text-transform:uppercase;letter-spacing:.1em;margin:14px 0 6px;}
+    .item{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);border:1.5px solid var(--border);margin-bottom:7px;overflow:hidden;transition:opacity .2s;}
+    .item.done{opacity:.4;}
+    .item-main{display:flex;align-items:center;gap:12px;padding:13px 14px;}
+    .check{width:30px;height:30px;border-radius:50%;border:2.5px solid var(--g3);background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;position:relative;}
+    .check.checked{background:var(--g2);border-color:var(--g2);}
+    .check-tick{display:none;color:#fff;font-size:16px;font-weight:900;}
+    .check.checked .check-tick{display:block;}
+    .item-info{flex:1;min-width:0;}
+    .item-name{font-size:15px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .item.done .item-name{text-decoration:line-through;}
+    .item-sub{font-size:11px;color:var(--soft);font-weight:600;margin-top:2px;display:flex;flex-wrap:wrap;align-items:center;gap:5px;}
+    .badge{border-radius:6px;padding:2px 6px;font-size:10px;font-weight:800;}
+    .badge-up{background:#FFEBEE;color:var(--red);}
+    .badge-down{background:#E8F5E9;color:var(--g2);}
+    .expand-btn{background:#f0f4f0;border:none;border-radius:8px;padding:7px 11px;color:var(--soft);font-size:12px;cursor:pointer;flex-shrink:0;}
+    .item-detail{padding:0 14px 12px;border-top:1px solid var(--border);display:none;}
+    .item-detail.open{display:block;}
+    .detail-row{display:flex;gap:8px;margin-top:10px;align-items:flex-end;}
+    .price-wrap{flex:1;}
+    .price-wrap label{font-size:11px;color:var(--soft);font-weight:700;display:block;margin-bottom:4px;}
+    .price-input{width:100%;background:var(--bg);border:2px solid var(--border);border-radius:10px;padding:9px 12px;font-size:15px;font-family:'Space Mono',monospace;font-weight:700;color:var(--g1);outline:none;}
+    .price-input:focus{border-color:var(--g3);}
+    .last-price{font-size:11px;color:var(--soft);margin-top:4px;}
+    .subtotal-line{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:var(--g2);margin-top:6px;}
+    .qty-detail-wrap{flex-shrink:0;}
+    .qty-detail-wrap label{font-size:11px;color:var(--soft);font-weight:700;display:block;margin-bottom:4px;}
+    .qty-inline{display:flex;align-items:center;gap:4px;background:var(--bg);border:2px solid var(--border);border-radius:10px;padding:4px 8px;}
+    .qty-sm{background:none;border:none;font-size:22px;color:var(--g2);cursor:pointer;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-weight:900;}
+    .qty-inline-val{font-family:'Space Mono',monospace;font-size:14px;font-weight:700;min-width:20px;text-align:center;}
+    .detail-btns{display:flex;gap:6px;margin-top:10px;}
+    .btn-sm{flex:1;border:none;border-radius:10px;padding:11px 6px;font-size:12px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;}
+    .btn-wish-mv{background:#FFF9C4;color:var(--yellow);border:2px solid #FFE082;}
+    .btn-del{background:#FFEBEE;color:var(--red);border:2px solid #FFCDD2;}
+
+    /* EMPTY */
+    .empty{text-align:center;padding:50px 20px;color:var(--soft);}
+    .empty-icon{font-size:52px;margin-bottom:12px;}
+    .empty h3{font-size:18px;font-weight:800;margin-bottom:6px;color:var(--text);}
+    .empty p{font-size:13px;line-height:1.6;}
+
+    /* WISHLIST */
+    .wish-card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);border:2px solid #FFE082;margin-bottom:8px;padding:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+    .wish-info{flex:1;min-width:0;}
+    .wish-name{font-size:15px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .wish-cat{font-size:11px;color:var(--soft);font-weight:600;margin-top:2px;}
+    .wish-price{font-family:'Space Mono',monospace;font-size:13px;color:var(--yellow);font-weight:700;margin-top:4px;}
+    .wish-btns{display:flex;gap:6px;flex-shrink:0;}
+    .btn-mv-main{background:var(--g1);color:#fff;border:none;border-radius:10px;padding:10px 13px;font-size:12px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;}
+    .btn-del-sm{background:#FFEBEE;color:var(--red);border:none;border-radius:10px;padding:10px 11px;font-size:14px;cursor:pointer;}
+
+    /* HISTORY PANEL */
+    .hist-panel{background:var(--card);border-radius:var(--r);border:2px solid var(--border);padding:14px;margin-bottom:10px;}
+    .hist-title{font-size:11px;font-weight:900;color:var(--soft);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;}
+    .hist-chips{display:flex;flex-wrap:wrap;gap:7px;}
+    .hist-chip{background:var(--bg);border:1.5px solid var(--border);border-radius:20px;padding:7px 14px;font-size:12px;font-weight:700;color:var(--text);cursor:pointer;transition:all .15s;}
+    .hist-chip:active{background:var(--gl);border-color:var(--g3);}
+
+    /* REPORT */
+    .report-card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);border:1.5px solid var(--border);padding:16px;margin-bottom:12px;}
+    .report-title{font-size:12px;font-weight:900;color:var(--soft);text-transform:uppercase;letter-spacing:.1em;margin-bottom:14px;}
+    .bar-chart{display:flex;align-items:flex-end;gap:8px;height:100px;}
+    .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;}
+    .bar-fill{width:100%;border-radius:8px 8px 0 0;min-height:3px;}
+    .bar-month{font-size:10px;color:var(--soft);font-weight:700;}
+    .bar-val{font-size:9px;color:var(--soft);font-family:'Space Mono',monospace;}
+    .cat-row{margin-bottom:10px;}
+    .cat-row-top{display:flex;justify-content:space-between;margin-bottom:4px;}
+    .cat-name{font-size:13px;font-weight:700;}
+    .cat-val{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:var(--g2);}
+    .cat-bar-track{background:var(--bg);border-radius:999px;height:7px;overflow:hidden;}
+    .cat-bar-fill{height:100%;border-radius:999px;}
+    .total-row{display:flex;justify-content:space-between;align-items:center;padding-top:12px;border-top:1.5px solid var(--border);margin-top:4px;}
+    .total-label{font-size:14px;font-weight:800;}
+    .total-val{font-family:'Space Mono',monospace;font-size:18px;font-weight:700;color:var(--g1);}
+    .ph-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);}
+    .ph-name{font-size:13px;font-weight:700;text-transform:capitalize;}
+    .ph-prev{font-size:11px;color:var(--soft);}
+    .ph-cur{font-family:'Space Mono',monospace;font-size:14px;font-weight:700;}
+    .ph-diff{font-size:11px;font-weight:700;}
+
+    /* TOAST */
+    #toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:var(--g1);color:#fff;border-radius:20px;padding:10px 20px;font-size:13px;font-weight:700;z-index:999;opacity:0;transition:opacity .25s;pointer-events:none;white-space:nowrap;box-shadow:0 4px 20px rgba(27,94,32,.4);}
+    #toast.show{opacity:1;}
+  </style>
+</head>
+<body>
+
+<div id="toast"></div>
+
+<div id="screen-main" class="screen active">
+
+  <div class="header">
+    <div class="header-top">
+      <div>
+        <div class="hd-title">🛒 Mercado</div>
+        <div class="hd-sub" id="header-month"></div>
+      </div>
+      <button class="btn-icon" id="btn-hist-toggle">🕐</button>
+    </div>
+    <div class="budget-box">
+      <div class="budget-row">
+        <span class="budget-label">💰 ORÇAMENTO</span>
+        <span class="budget-value" id="budget-display">R$ 0,00 / —</span>
+      </div>
+      <div class="budget-track">
+        <div class="budget-fill" id="budget-fill" style="width:0%"></div>
+      </div>
+      <div class="budget-warn" id="budget-warn"></div>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat-card"><div class="stat-icon">📋</div><div class="stat-num" id="stat-total">0</div><div class="stat-label">Itens</div></div>
+    <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-num" id="stat-done">0</div><div class="stat-label">Carrinho</div></div>
+    <div class="stat-card"><div class="stat-icon">⭐</div><div class="stat-num" id="stat-wish">0</div><div class="stat-label">Desejos</div></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="lista">🛒 Lista</button>
+    <button class="tab" data-tab="desejos">⭐ Desejos</button>
+    <button class="tab" data-tab="relatorio">📊 Relatório</button>
+  </div>
+
+  <div class="scroll" id="main-scroll">
+    <div id="tab-lista">
+      <div id="hist-panel" class="hist-panel" style="display:none;margin-top:10px;">
+        <div class="hist-title">Adicionar do histórico</div>
+        <div class="hist-chips" id="hist-chips"></div>
+      </div>
+      <div id="items-container"></div>
+    </div>
+    <div id="tab-desejos" style="display:none;">
+      <div style="background:#FFF9C4;border:2px solid #FFE082;border-radius:14px;padding:12px 14px;margin-bottom:12px;margin-top:6px;font-size:13px;color:#7A5C00;font-weight:700;line-height:1.5;">
+        ⭐ Itens que você quer mas não cabem no orçamento agora. Mova para a lista quando chegar a hora!
+      </div>
+      <div id="wish-container"></div>
+    </div>
+    <div id="tab-relatorio" style="display:none;">
+      <div class="report-card" style="margin-top:6px;">
+        <div class="report-title">📅 Histórico de gastos</div>
+        <div class="bar-chart" id="chart-months"></div>
+      </div>
+      <div class="report-card">
+        <div class="report-title">📦 Gastos por categoria</div>
+        <div id="chart-cats"></div>
+        <div class="total-row">
+          <span class="total-label">Total registrado</span>
+          <span class="total-val" id="report-total">R$ 0,00</span>
+        </div>
+      </div>
+      <div class="report-card">
+        <div class="report-title">📈 Histórico de preços</div>
+        <div id="price-history-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="add-bar">
+    <div class="add-row">
+      <input id="add-input" class="add-input" type="text" placeholder="Nome do item..." autocomplete="off" autocorrect="off"/>
+      <button class="btn-add" id="btn-add" aria-label="Adicionar">+</button>
+      <button class="btn-wish" id="btn-add-wish" aria-label="Adicionar ao desejo">⭐</button>
+    </div>
+    <div class="qty-row">
+      <div class="qty-box">
+        <button class="qty-btn" id="qty-minus">−</button>
+        <span class="qty-num" id="qty-val">1</span>
+        <button class="qty-btn" id="qty-plus">+</button>
+      </div>
+      <div class="budget-set">
+        <label for="budget-input">ORÇAMENTO R$</label>
+        <input type="number" id="budget-input" placeholder="800"/>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ═══════════ CATEGORIAS ═══════════
+const CATS = {
+  "🥦 Hortifruti":["banana","maçã","laranja","tomate","alface","cenoura","batata","cebola","alho","limão","pepino","abobrinha","chuchu","beterraba","manga","abacaxi","mamão","melancia","uva","pera","brócolis","couve","espinafre","rúcula","mandioca","inhame","milho","abóbora","jiló","quiabo"],
+  "🥩 Açougue":["frango","carne","peixe","linguiça","picanha","patinho","alcatra","coxão","contrafilé","acém","costela","bacon","presunto","salsicha","bisteca","filé","atum","sardinha","camarão"],
+  "🥛 Laticínios":["leite","queijo","iogurte","manteiga","margarina","requeijão","creme de leite","cream cheese","ricota","mussarela","parmesão","ovos"],
+  "🧹 Limpeza":["detergente","sabão","desinfetante","esponja","cloro","amaciante","água sanitária","sabão em pó","limpador","álcool","pano","luva","rodo","vassoura","multiuso"],
+  "🍞 Padaria":["pão","bolo","torrada","biscoito","bolacha","granola","cereal","aveia","achocolatado","chocolate"],
+  "❄️ Congelados":["pizza","lasanha","sorvete","nuggets","hamburguer","batata frita congelada","pão de queijo congelado"],
+  "🛒 Mercearia":["arroz","feijão","macarrão","óleo","açúcar","sal","café","farinha","molho de tomate","extrato de tomate","vinagre","azeite","mel","ketchup","catchup","mostarda","maionese","shoyu","papel higiênico","papel toalha","fralda","absorvente","shampoo","condicionador","sabonete","creme","protetor solar","pilha","saco de lixo","filme plástico","papel alumínio","ervilha","milho em lata","atum em lata"],
+};
+
+function getCat(name) {
+  const n = name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+  for (const [cat, kws] of Object.entries(CATS)) {
+    for (const k of kws) {
+      const kn = k.normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+      if (n.includes(kn) || kn.includes(n.split(" ")[0])) return cat;
+    }
+  }
+  return "🛒 Mercearia";
+}
+
+const HIST_SUGGESTIONS = ["arroz","feijão","leite","óleo","açúcar","sal","café","papel higiênico","detergente","sabão em pó","macarrão","frango","pão","manteiga","queijo","iogurte","ovos","tomate","cebola","alho","bananas","laranja"];
+
+// ═══════════ STATE ═══════════
+function defaultState() {
+  return { items:[], wishlist:[], budget:0, priceHistory:{}, monthlyTotals:{}, nextId:1 };
+}
+function loadState() {
+  try { const s = JSON.parse(localStorage.getItem('mercado_v1')); return s ? {...defaultState(),...s} : defaultState(); }
+  catch { return defaultState(); }
+}
+function saveState() { localStorage.setItem('mercado_v1', JSON.stringify(state)); }
+
+let state = loadState();
+let activeTab = 'lista';
+let histOpen = false;
+let addQty = 1;
+
+// ═══════════ UTILS ═══════════
+function fmtBRL(n) { return 'R$ ' + n.toFixed(2).replace('.',','); }
+function getTotal() {
+  return state.items.reduce((s,i) => s + (parseFloat(i.price)||0)*(parseInt(i.qty)||1), 0);
+}
+function curMonthKey() {
+  const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+}
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._to); t._to = setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+// ═══════════ RENDER HEADER ═══════════
+function renderHeader() {
+  const now = new Date();
+  document.getElementById('header-month').textContent =
+    now.toLocaleDateString('pt-BR',{month:'long',year:'numeric'}).replace(/^\w/,c=>c.toUpperCase());
+  const total = getTotal(), budget = state.budget;
+  const pct = budget > 0 ? Math.min((total/budget)*100, 100) : 0;
+  document.getElementById('budget-display').textContent = `${fmtBRL(total)} / ${budget>0?fmtBRL(budget):'—'}`;
+  const fill = document.getElementById('budget-fill');
+  fill.style.width = pct + '%';
+  fill.style.background = pct>90?'#ef5350':pct>70?'#FFA726':'#A5D6A7';
+  const warn = document.getElementById('budget-warn');
+  if (pct>90 && budget>0) warn.textContent = '⚠️ Orçamento estourado!';
+  else if (pct>70 && budget>0) warn.textContent = '⚠️ Se aproximando do limite';
+  else warn.textContent = '';
+  const bi = document.getElementById('budget-input');
+  if (document.activeElement !== bi) bi.value = budget>0?budget:'';
+}
+
+// ═══════════ RENDER STATS ═══════════
+function renderStats() {
+  document.getElementById('stat-total').textContent = state.items.length;
+  document.getElementById('stat-done').textContent = state.items.filter(i=>i.checked).length;
+  document.getElementById('stat-wish').textContent = state.wishlist.length;
+}
+
+// ═══════════ RENDER LISTA ═══════════
+function renderLista() {
+  // history panel
+  const panel = document.getElementById('hist-panel');
+  panel.style.display = histOpen ? 'block' : 'none';
+  if (histOpen) {
+    const existing = new Set(state.items.map(i=>i.name.toLowerCase()));
+    const chips = document.getElementById('hist-chips');
+    chips.innerHTML = HIST_SUGGESTIONS.map(h =>
+      `<span class="hist-chip" data-hist="${h}">${existing.has(h)?'✓ ':'+ '}${h}</span>`
+    ).join('');
+    chips.querySelectorAll('.hist-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const nm = chip.dataset.hist;
+        if (state.items.find(i=>i.name.toLowerCase()===nm)) { toast(`"${nm}" já está na lista`); return; }
+        doAddItem(nm, 1, false);
+        histOpen = false;
+        render();
+      });
+    });
+  }
+
+  const unchecked = state.items.filter(i=>!i.checked);
+  const checked = state.items.filter(i=>i.checked);
+  const container = document.getElementById('items-container');
+
+  if (state.items.length === 0) {
+    container.innerHTML = `<div class="empty"><div class="empty-icon">🛒</div><h3>Lista vazia!</h3><p>Digite o nome do item acima e toque em + para adicionar.</p></div>`;
+    return;
+  }
+
+  const grouped = {};
+  unchecked.forEach(item => {
+    const c = item.category||'🛒 Mercearia';
+    if (!grouped[c]) grouped[c] = [];
+    grouped[c].push(item);
+  });
+
+  let html = '';
+  for (const [cat, items] of Object.entries(grouped)) {
+    html += `<div class="cat-label">${cat}</div>`;
+    items.forEach(item => { html += itemHTML(item); });
+  }
+  if (checked.length > 0) {
+    html += `<div class="cat-label" style="margin-top:18px;opacity:.45">✓ NO CARRINHO (${checked.length})</div>`;
+    checked.forEach(item => { html += itemHTML(item); });
+  }
+  container.innerHTML = html;
+
+  // events
+  container.querySelectorAll('[data-act]').forEach(el => {
+    el.addEventListener('click', onItemClick);
+  });
+  container.querySelectorAll('.price-input').forEach(el => {
+    el.addEventListener('input', onPriceInput);
+    el.addEventListener('change', onPriceInput);
+  });
+}
+
+function itemHTML(item) {
+  const ph = state.priceHistory[item.name.toLowerCase()];
+  const last = ph && ph.length > 1 ? ph[ph.length-2] : null;
+  const cur = parseFloat(item.price);
+  let badge = '';
+  if (last && cur > 0) {
+    const d = cur - last.price;
+    if (d > last.price*0.08) badge = `<span class="badge badge-up">▲ Mais caro</span>`;
+    else if (d < -last.price*0.08) badge = `<span class="badge badge-down">▼ Promoção!</span>`;
+  }
+  const sub = (cur||0)*(parseInt(item.qty)||1);
+  const lastTxt = last ? `Último: ${fmtBRL(last.price)}` : '';
+  return `
+<div class="item ${item.checked?'done':''}" data-id="${item.id}">
+  <div class="item-main">
+    <button class="check ${item.checked?'checked':''}" data-act="check" data-id="${item.id}"><span class="check-tick">✓</span></button>
+    <div class="item-info">
+      <div class="item-name">${item.name}</div>
+      <div class="item-sub">
+        <span>×${item.qty}</span>
+        ${item.price?`<span>${fmtBRL(sub)}</span>`:''}
+        ${badge}
+        ${lastTxt?`<span style="color:#bbb;font-size:10px">${lastTxt}</span>`:''}
+      </div>
+    </div>
+    <button class="expand-btn" data-act="expand" data-id="${item.id}">▾</button>
+  </div>
+  <div class="item-detail" id="det-${item.id}">
+    <div class="detail-row">
+      <div class="price-wrap">
+        <label>Preço unitário (R$)</label>
+        <input class="price-input" type="number" step="0.01" min="0" value="${item.price||''}" placeholder="0,00" data-id="${item.id}"/>
+        ${last?`<div class="last-price">${last.month}: ${fmtBRL(last.price)}</div>`:''}
+        ${item.price?`<div class="subtotal-line">= ${fmtBRL(sub)}</div>`:''}
+      </div>
+      <div class="qty-detail-wrap">
+        <label>Qtd</label>
+        <div class="qty-inline">
+          <button class="qty-sm" data-act="qless" data-id="${item.id}">−</button>
+          <span class="qty-inline-val">${item.qty}</span>
+          <button class="qty-sm" data-act="qmore" data-id="${item.id}">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="detail-btns">
+      <button class="btn-sm btn-wish-mv" data-act="to-wish" data-id="${item.id}">⭐ Desejos</button>
+      <button class="btn-sm btn-del" data-act="del" data-id="${item.id}">🗑 Remover</button>
+    </div>
+  </div>
+</div>`;
+}
+
+function onItemClick(e) {
+  const act = e.currentTarget.dataset.act;
+  const id = parseInt(e.currentTarget.dataset.id);
+  if (act==='check') {
+    const it = state.items.find(i=>i.id===id);
+    if (it) { it.checked=!it.checked; saveState(); render(); }
+  }
+  if (act==='expand') {
+    const d = document.getElementById('det-'+id);
+    if (d) d.classList.toggle('open');
+  }
+  if (act==='qless') {
+    const it = state.items.find(i=>i.id===id);
+    if (it && it.qty>1) { it.qty--; saveState(); render(); }
+  }
+  if (act==='qmore') {
+    const it = state.items.find(i=>i.id===id);
+    if (it) { it.qty++; saveState(); render(); }
+  }
+  if (act==='del') {
+    state.items = state.items.filter(i=>i.id!==id);
+    saveState(); render(); toast('Item removido');
+  }
+  if (act==='to-wish') {
+    const it = state.items.find(i=>i.id===id);
+    if (it) {
+      state.wishlist.push({...it, checked:false});
+      state.items = state.items.filter(i=>i.id!==id);
+      saveState(); render(); toast('Movido para Desejos ⭐');
+    }
+  }
+  if (act==='from-wish') {
+    const it = state.wishlist.find(i=>i.id===id);
+    if (it) {
+      state.items.push({...it});
+      state.wishlist = state.wishlist.filter(i=>i.id!==id);
+      saveState(); render(); toast('Adicionado à lista 🛒');
+    }
+  }
+  if (act==='del-wish') {
+    state.wishlist = state.wishlist.filter(i=>i.id!==id);
+    saveState(); render(); toast('Removido');
+  }
+}
+
+function onPriceInput(e) {
+  const id = parseInt(e.target.dataset.id);
+  const it = state.items.find(i=>i.id===id);
+  if (!it) return;
+  it.price = e.target.value;
+  const price = parseFloat(it.price);
+  if (!isNaN(price) && price > 0) {
+    const now = new Date();
+    const mLabel = now.toLocaleDateString('pt-BR',{month:'short',year:'2-digit'});
+    const key = it.name.toLowerCase();
+    if (!state.priceHistory[key]) state.priceHistory[key] = [];
+    const existing = state.priceHistory[key].find(e=>e.month===mLabel);
+    if (existing) existing.price = price; else state.priceHistory[key].push({month:mLabel, price});
+    if (state.priceHistory[key].length > 8) state.priceHistory[key].shift();
+  }
+  // update monthly
+  const mk = curMonthKey();
+  state.monthlyTotals[mk] = getTotal();
+  saveState();
+  renderHeader();
+}
+
+// ═══════════ RENDER DESEJOS ═══════════
+function renderDesejos() {
+  const c = document.getElementById('wish-container');
+  if (state.wishlist.length === 0) {
+    c.innerHTML = `<div class="empty"><div class="empty-icon">⭐</div><h3>Nenhum desejo ainda</h3><p>Use o botão ⭐ ao digitar um item, ou mova itens da lista principal para cá.</p></div>`;
+    return;
+  }
+  c.innerHTML = state.wishlist.map(item => `
+    <div class="wish-card">
+      <div class="wish-info">
+        <div class="wish-name">${item.name}</div>
+        <div class="wish-cat">${item.category}</div>
+        ${item.price?`<div class="wish-price">×${item.qty} · ${fmtBRL((parseFloat(item.price)||0)*(item.qty||1))}</div>`:''}
+      </div>
+      <div class="wish-btns">
+        <button class="btn-mv-main" data-act="from-wish" data-id="${item.id}">+ Lista</button>
+        <button class="btn-del-sm" data-act="del-wish" data-id="${item.id}">✕</button>
+      </div>
+    </div>`).join('');
+  document.getElementById('wish-container').querySelectorAll('[data-act]').forEach(el=>el.addEventListener('click',onItemClick));
+}
+
+// ═══════════ RENDER RELATORIO ═══════════
+function renderRelatorio() {
+  renderChartMonths();
+  renderChartCats();
+  renderPriceHist();
+  document.getElementById('report-total').textContent = fmtBRL(getTotal());
+}
+
+function renderChartMonths() {
+  const now = new Date();
+  const months = [];
+  for (let i=4;i>=0;i--) {
+    const d = new Date(now.getFullYear(), now.getMonth()-i, 1);
+    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    const label = d.toLocaleDateString('pt-BR',{month:'short'});
+    months.push({key, label, val: state.monthlyTotals[key]||0});
+  }
+  const mk = curMonthKey();
+  const ci = months.findIndex(m=>m.key===mk);
+  if (ci>=0) months[ci].val = getTotal();
+  const maxVal = Math.max(...months.map(m=>m.val), 1);
+  document.getElementById('chart-months').innerHTML = months.map(m => {
+    const h = Math.max(Math.round((m.val/maxVal)*78), m.val>0?8:3);
+    const isCur = m.key===mk;
+    return `<div class="bar-col">
+      ${m.val>0?`<div class="bar-val">${Math.round(m.val)}</div>`:''}
+      <div style="flex:1;display:flex;align-items:flex-end;width:100%">
+        <div class="bar-fill" style="height:${h}px;background:${isCur?'var(--g2)':'var(--gl)'}"></div>
+      </div>
+      <div class="bar-month" style="${isCur?'color:var(--g1);font-weight:900':''}">${m.label}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderChartCats() {
+  const COLORS = ['#43A047','#26C6DA','#FFA726','#EF5350','#AB47BC','#66BB6A','#7E57C2'];
+  const cats = {};
+  state.items.forEach(item => {
+    const c = item.category||'🛒 Mercearia';
+    const v = (parseFloat(item.price)||0)*(item.qty||1);
+    cats[c] = (cats[c]||0)+v;
+  });
+  const entries = Object.entries(cats).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]);
+  const total = entries.reduce((s,[,v])=>s+v,0);
+  const container = document.getElementById('chart-cats');
+  if (!entries.length) {
+    container.innerHTML='<div style="color:var(--soft);font-size:13px;padding:10px 0">Digite os preços dos itens para ver os gastos por categoria.</div>';
+    return;
+  }
+  container.innerHTML = entries.map(([cat,val],i)=>`
+    <div class="cat-row">
+      <div class="cat-row-top"><span class="cat-name">${cat}</span><span class="cat-val">${fmtBRL(val)}</span></div>
+      <div class="cat-bar-track"><div class="cat-bar-fill" style="width:${(val/total)*100}%;background:${COLORS[i%COLORS.length]}"></div></div>
+    </div>`).join('');
+}
+
+function renderPriceHist() {
+  const container = document.getElementById('price-history-list');
+  const entries = Object.entries(state.priceHistory).filter(([,h])=>h.length>0);
+  if (!entries.length) {
+    container.innerHTML='<div style="color:var(--soft);font-size:13px;padding:8px 0">O histórico de preços aparece aqui conforme você digita os preços dos itens.</div>';
+    return;
+  }
+  container.innerHTML = entries.slice(0,12).map(([name,history])=>{
+    const last2 = history.slice(-2);
+    const curr = last2[last2.length-1];
+    const prev = last2.length>1?last2[0]:null;
+    const diff = prev?curr.price-prev.price:0;
+    return `<div class="ph-row">
+      <div><div class="ph-name">${name}</div>${prev?`<div class="ph-prev">${prev.month}: ${fmtBRL(prev.price)}</div>`:''}</div>
+      <div style="text-align:right">
+        <div class="ph-cur">${fmtBRL(curr.price)}</div>
+        ${prev?`<div class="ph-diff" style="color:${diff>0?'var(--red)':'var(--g2)'}">${diff>0?'▲':'▼'} ${fmtBRL(Math.abs(diff))}</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════ ADD ITEM ═══════════
+function doAddItem(name, qty, toWishlist) {
+  if (!name.trim()) return;
+  const cat = getCat(name);
+  const id = state.nextId++;
+  const item = {id, name:name.trim(), qty:qty||1, price:'', category:cat, checked:false};
+  if (toWishlist) state.wishlist.push(item);
+  else state.items.push(item);
+  saveState();
+}
+
+// ═══════════ RENDER ALL ═══════════
+function render() {
+  renderHeader();
+  renderStats();
+  if (activeTab==='lista') renderLista();
+  else if (activeTab==='desejos') renderDesejos();
+  else renderRelatorio();
+}
+
+function setTab(tab) {
+  activeTab = tab;
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
+  document.getElementById('tab-lista').style.display = tab==='lista'?'block':'none';
+  document.getElementById('tab-desejos').style.display = tab==='desejos'?'block':'none';
+  document.getElementById('tab-relatorio').style.display = tab==='relatorio'?'block':'none';
+}
+
+// ═══════════ EVENTS ═══════════
+document.getElementById('btn-add').addEventListener('click', () => {
+  const inp = document.getElementById('add-input');
+  const name = inp.value.trim();
+  if (!name) { inp.focus(); return; }
+  doAddItem(name, addQty, false);
+  inp.value=''; addQty=1; document.getElementById('qty-val').textContent='1';
+  setTab('lista'); render();
+  toast(`"${name}" adicionado ✓`);
+});
+
+document.getElementById('btn-add-wish').addEventListener('click', () => {
+  const inp = document.getElementById('add-input');
+  const name = inp.value.trim();
+  if (!name) { inp.focus(); return; }
+  doAddItem(name, addQty, true);
+  inp.value=''; addQty=1; document.getElementById('qty-val').textContent='1';
+  setTab('desejos'); render();
+  toast(`"${name}" na lista de desejos ⭐`);
+});
+
+document.getElementById('add-input').addEventListener('keydown', e=>{
+  if (e.key==='Enter') document.getElementById('btn-add').click();
+});
+
+document.getElementById('qty-minus').addEventListener('click', ()=>{
+  if (addQty>1) { addQty--; document.getElementById('qty-val').textContent=addQty; }
+});
+document.getElementById('qty-plus').addEventListener('click', ()=>{
+  addQty++; document.getElementById('qty-val').textContent=addQty;
+});
+
+document.getElementById('budget-input').addEventListener('input', e=>{
+  const v = parseFloat(e.target.value);
+  state.budget = isNaN(v)?0:v;
+  saveState(); renderHeader();
+});
+
+document.querySelectorAll('.tab').forEach(btn=>{
+  btn.addEventListener('click', ()=>{ setTab(btn.dataset.tab); render(); });
+});
+
+document.getElementById('btn-hist-toggle').addEventListener('click', ()=>{
+  histOpen=!histOpen;
+  setTab('lista'); render();
+});
+
+// ═══════════ INIT ═══════════
+setTab('lista');
+render();
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+</script>
+</body>
+</html>
